@@ -3,6 +3,8 @@ package bitcoinclient
 import (
 	"log"
 	"testing"
+
+	"github.com/blocksteed/bitcoin-client/models"
 )
 
 const bsvHost string = "localhost"
@@ -79,7 +81,28 @@ func TestGetRawTransaction(t *testing.T) {
 	}
 }
 
-func TestSendGetRawTransactionShouldFail(t *testing.T) {
+func TestCreateRawTransaction(t *testing.T) {
+	bitcoin, err := New(bsvHost, bsvPort, bsvUsername, bsvPassword, false)
+	if err != nil {
+		t.Errorf("error: %+v", err)
+		return
+	}
+
+	tt := models.TransactionTemplate{}
+	tt.AddInput(models.Input{Txid: "a464f897e0715189e7e418d7682537e9daa92273a532f79adf6fd552fef1e228"})
+	tt.AddOutput(models.Output{Data: "000111"})
+
+	txHex, err := bitcoin.CreateRawTransaction(tt)
+	if err != nil {
+		t.Errorf("Error : %v", err)
+		return
+	}
+	expectedTxHex := "020000000128e2f1fe52d56fdf9af732a57322a9dae9372568d718e4e7895171e097f864a4000000000000000000010000000000000000056a0300011100000000"
+	if txHex != expectedTxHex {
+		t.Errorf("Failed tx hex to be %v got %v", expectedTxHex, txHex)
+	}
+}
+func TestSendRawTransactionShouldFail(t *testing.T) {
 	bitcoin, err := New(bsvHost, bsvPort, bsvUsername, bsvPassword, false)
 	if err != nil {
 		t.Errorf("error: %+v", err)

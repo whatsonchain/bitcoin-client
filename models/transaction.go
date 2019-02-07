@@ -31,7 +31,6 @@ type TransactionDetails struct {
 
 // Vin comment
 type Vin struct {
-	TxId      string    `json:"txid"`
 	Vout      int64     `json:"vout"`
 	ScriptSig ScriptSig `json:"scriptSig"`
 	Sequence  int64     `json:"sequence"`

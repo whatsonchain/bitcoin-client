@@ -2,9 +2,10 @@ package bitcoinclient
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 
-	"github.com/blocksteed/bitcoinClient/models"
+	"github.com/blocksteed/bitcoin-client/models"
 )
 
 // A Bitcoind represents a Bitcoind client
@@ -79,8 +80,26 @@ func (b *Bitcoind) GetRawTransaction(txid string) (block *models.Transaction, er
 	return
 }
 
+// CreateRawTransaction comment
+func (b *Bitcoind) CreateRawTransaction(t models.TransactionTemplate) (txHex string, err error) {
+
+	params := []interface{}{t.Inputs, t.Output}
+	if t.Locktime != 0 {
+		params = append(params, t.Locktime)
+	}
+
+	r, err := b.client.call("createrawtransaction", params)
+	if err != nil {
+		fmt.Printf("Error creating transaction: %+v\n", err)
+		return "", err
+	}
+	json.Unmarshal(r.Result, &txHex)
+	return
+}
+
 // SendRawTransaction comment
 func (b *Bitcoind) SendRawTransaction(hex string) (txid string, err error) {
+
 	r, err := b.client.call("sendrawtransaction", []interface{}{hex})
 	if err != nil {
 		return "", err
